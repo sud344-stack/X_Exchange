@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, memo } from 'react';
-import { createChart } from 'lightweight-charts';
+import { createChart, ColorType, CandlestickSeries } from 'lightweight-charts';
 import type { IChartApi, ISeriesApi, PriceLineOptions } from 'lightweight-charts';
 
 interface Order {
@@ -30,7 +30,7 @@ const TradingChart: React.FC<TradingChartProps> = ({ symbol, openOrders = [] }) 
     // Initialize chart
     const chart = createChart(chartContainerRef.current, {
       layout: {
-        background: { type: 'solid' as const, color: '#18181b' },
+        background: { type: ColorType.Solid, color: '#18181b' },
         textColor: '#a1a1aa',
       },
       grid: {
@@ -50,14 +50,13 @@ const TradingChart: React.FC<TradingChartProps> = ({ symbol, openOrders = [] }) 
 
     chartRef.current = chart;
 
-    const candlestickSeries = chart.addSeries({
-      type: 'Candlestick',
+    const candlestickSeries = chart.addSeries(CandlestickSeries, {
       upColor: '#22c55e',
       downColor: '#ef4444',
       borderVisible: false,
       wickUpColor: '#22c55e',
       wickDownColor: '#ef4444',
-    } as Parameters<typeof chart.addSeries>[0]) as ISeriesApi<"Candlestick">;
+    });
 
     seriesRef.current = candlestickSeries;
 
@@ -67,14 +66,14 @@ const TradingChart: React.FC<TradingChartProps> = ({ symbol, openOrders = [] }) 
         const response = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=1h&limit=500`);
         const data = await response.json();
         const formattedData = data.map((d: (string | number)[]) => ({
-          time: d[0] / 1000,
-          open: parseFloat(d[1]),
-          high: parseFloat(d[2]),
-          low: parseFloat(d[3]),
-          close: parseFloat(d[4]),
+          time: (d[0] as number) / 1000 as import('lightweight-charts').Time,
+          open: parseFloat(d[1] as string),
+          high: parseFloat(d[2] as string),
+          low: parseFloat(d[3] as string),
+          close: parseFloat(d[4] as string),
         }));
         candlestickSeries.setData(formattedData);
-      } catch {
+      } catch (e) {
         console.error('Failed to fetch historical data for chart', e);
       }
     };
