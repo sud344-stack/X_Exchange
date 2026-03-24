@@ -182,3 +182,28 @@ pub async fn create_order(
         ),
     }
 }
+
+pub async fn get_open_orders(
+    State(state): State<AppState>,
+    Path(user_id): Path<Uuid>,
+) -> impl IntoResponse {
+    let result = sqlx::query_as::<_, crate::models::Order>(
+        r#"
+        SELECT id, user_id, asset, side, type as order_type, price, quantity, status, queue_ahead, executed_quantity, created_at, updated_at
+        FROM orders
+        WHERE user_id = $1 AND status = 'OPEN'
+        ORDER BY created_at DESC
+        "#,
+    )
+    .bind(user_id)
+    .fetch_all(&*state.db)
+    .await;
+
+    match result {
+        Ok(orders) => (StatusCode::OK, Json(serde_json::json!(orders))),
+        Err(e) => (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(serde_json::json!({ "error": e.to_string() })),
+        ),
+    }
+}
