@@ -1,2 +1,2 @@
-# X_Exchange
-X_Exchange are real-time and fast trading platform
+# N_Exchange
+N_Exchange is new crypto exchange.
