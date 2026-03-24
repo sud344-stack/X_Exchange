@@ -67,6 +67,10 @@ async fn main() {
             get(routes::api::get_portfolio),
         )
         .route("/api/orders", post(routes::api::create_order))
+        .route(
+            "/api/users/{user_id}/orders",
+            get(routes::api::get_open_orders),
+        )
         .layer(cors)
         .with_state(state);
 
