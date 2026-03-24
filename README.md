@@ -1,2 +1,2 @@
-# N_Exchange
-N_Exchange is new crypto exchange.
+# X_Exchange
+X_Exchange is new crypto exchange.
