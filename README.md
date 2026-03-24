@@ -1,2 +1,2 @@
 # X_Exchange
-X_Exchange is real-time and fast trading platform
+X_Exchange are real-time and fast trading platform
